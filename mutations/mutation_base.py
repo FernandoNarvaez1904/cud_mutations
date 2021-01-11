@@ -133,7 +133,7 @@ class MutationBase(graphene.Mutation):
                 self.extra_info[info[0]] = info[1]
         graphene_type = options.get("graphene_type")
 
-    def set_graphene_type(self, graphene_type):
-
+    def set_graphene_type(self, options):
+        graphene_type = options.get("graphene_type")
         if Validator.validate_graphene_type(graphene_type):
             self.graphene_type = graphene_type
