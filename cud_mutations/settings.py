@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'graphene_django',
+
     # My Apps
-    'mutations'
+    'test_mutations',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +123,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = "test_mutations.User"
+
+GRAPHENE = {
+    'SCHEMA': 'test_mutations.schema.schema',
+}
