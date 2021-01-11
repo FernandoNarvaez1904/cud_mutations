@@ -61,8 +61,15 @@ class MutationBaseFormatFunctionsTestCase(TestCase):
         for i in args:
             self.assertTrue(i.display_name in arg_name_in_type)
 
-class MutationBaseSetFunctionsTestCase(TestCase):
-    
-    def setUp(self):
-        pass 
 
+class MutationBaseSetFunctionsTestCase(TestCase):
+
+    def setUp(self):
+        self.mutation_base = MutationBase()
+
+    
+    def test_set_graphene_type(self):
+
+        self.mutation_base.set_graphene_type(IsolatedModelType)
+        
+        self.assertTrue(issubclass(self.mutation_base.graphene_type, IsolatedModelType))
