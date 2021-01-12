@@ -29,7 +29,6 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         # Testing for arguments in graphene_type
         arg_name_in_type = IsolatedModelType().__dict__
-<<<<<<< HEAD
         for arg in arg_name_in_type:
             self.assertTrue(hasattr(self.mutation_base.Arguments, arg))
 
@@ -51,20 +50,6 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         for arg in ext_args:
             self.assertFalse(hasattr(self.mutation_base_second.Arguments, arg[0]))
-=======
-        args = func(IsolatedModelType)
-        for i in args:
-            self.assertTrue(i.display_name in arg_name_in_type)
-
-
-class MutationBaseSetFunctionsTestCase(TestCase):
-
-    def setUp(self):
-        self.mutation_base = MutationBase()
-
-    
-    def test_set_graphene_type(self):
->>>>>>> ee7fdeb613b0e240eef70b3f637d1f94ca9afdfc
 
         self.mutation_base.set_graphene_type(IsolatedModelType)
         
