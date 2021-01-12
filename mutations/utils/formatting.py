@@ -1,3 +1,4 @@
+import graphene
 from typing import Any, Generator
 from ..validator import Validator
 from ..mutation_argument import MutationArgument
