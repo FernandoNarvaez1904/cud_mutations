@@ -15,8 +15,7 @@ class MutationBase(graphene.Mutation):
 
     def set_arguments(self, options):
         # Getting and Setting Extra Arguments
-        extra_arguments = format_extra_arguments( 
-            extra_arguments=options.get("extra_arguments"))
+        extra_arguments = format_extra_arguments(options.get("extra_arguments"))
 
         self.set_graphene_type(options)
         graphene_type_argument = format_graphene_arguments(
