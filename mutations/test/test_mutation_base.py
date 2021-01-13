@@ -50,7 +50,4 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         for arg in ext_args:
             self.assertFalse(hasattr(self.mutation_base_second.Arguments, arg[0]))
-
-        self.mutation_base.set_graphene_type(IsolatedModelType)
         
-        self.assertTrue(issubclass(self.mutation_base.graphene_type, IsolatedModelType))
