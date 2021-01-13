@@ -1,6 +1,7 @@
 from django.test import TestCase
 import graphene
 from mutations.mutation_base import MutationBase
+from test_mutations.models import IsolatedModel
 from test_mutations.graphene_django_type import RelationshipReceiverModelType, IsolatedModelType
 
 
@@ -50,4 +51,22 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         for arg in ext_args:
             self.assertFalse(hasattr(self.mutation_base_second.Arguments, arg[0]))
-        
+    
+    def test_get_model(self):
+        options = {
+            "graphene_type": IsolatedModelType
+        }
+        self.mutation_base.set_graphene_type(options)
+        self.assertEqual(IsolatedModel, self.mutation_base.get_model())
+    
+    def test_set_extra_info(self):
+        options = {
+            "extra_info" : {
+                "prove" : 1
+            }
+        }
+        self.mutation_base.set_extra_info(options)
+
+        self.assertEqual(options.get("extra_info"), self.mutation_base.extra_info)
+
+    
