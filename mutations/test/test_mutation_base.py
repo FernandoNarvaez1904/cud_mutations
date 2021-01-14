@@ -69,4 +69,15 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         self.assertEqual(options.get("extra_info"), self.mutation_base.extra_info)
 
-    
+    def test_custom_auth(self):
+
+        def auth():
+            return (False, [])
+
+        options = {
+            "custom_auth" : auth
+        }
+        self.mutation_base.set_custom_auth(options)
+
+        ret = self.mutation_base.custom_auth()
+        self.assertEqual(auth(), ret)
