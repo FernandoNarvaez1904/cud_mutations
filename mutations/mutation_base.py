@@ -16,9 +16,7 @@ class MutationBase(graphene.Mutation):
     def get_model(self):
         return self.graphene_type._meta.model
 
-    def set_arguments(self, options):
-        # Getting and Setting Extra Arguments
-        extra_arguments = format_extra_arguments(options.get("extra_arguments"))
+    def set_graphene_arguments(self, options):
 
         self.set_graphene_type(options)
         graphene_type_argument = format_graphene_arguments(
@@ -26,17 +24,36 @@ class MutationBase(graphene.Mutation):
 
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
-            
+
+        arguments_info = {}
+        for argument in graphene_type_argument:
+            setattr(self.Arguments, argument.display_name, argument.of_type)
+            arguments_info[argument.display_name] = argument
+
+        if not hasattr(self, "arguments_info"):
+            setattr(self, "arguments_info", arguments_info)
+        else:
+            current_arguments_info = options.get("arguments_info")
+            self.arguments_info = {**current_arguments_info, **arguments_info}
+
+    def set_arguments(self, options):
+        # Getting and Setting Extra Arguments
+        extra_arguments = format_extra_arguments(
+            options.get("extra_arguments"))
+
+        if not hasattr(self, "Arguments"):
+            setattr(self, "Arguments", type("Arguments", (), {}))
+
         arguments_info = {}
         for argument in extra_arguments:
             setattr(self.Arguments, argument.display_name, argument.of_type)
             arguments_info[argument.display_name] = argument
 
-        for argument in graphene_type_argument:
-            setattr(self.Arguments, argument.display_name, argument.of_type)
-            arguments_info[argument.display_name] = argument
-
-        setattr(self, "arguments_info", arguments_info)
+        if not hasattr(self, "arguments_info"):
+            setattr(self, "arguments_info", arguments_info)
+        else:
+            current_arguments_info = options.get("arguments_info")
+            self.arguments_info = {**current_arguments_info, **arguments_info}
 
     def set_custom_auth(self, options):
         custom_auth = options.get("custom_auth")
