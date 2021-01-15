@@ -13,6 +13,9 @@ class MutationBase(graphene.Mutation):
     def mutate(cls, root, info, **kwargs):
         pass
 
+    def get_model(self):
+        return self.graphene_type._meta.model
+
     def set_arguments(self, options):
         # Getting and Setting Extra Arguments
         extra_arguments = format_extra_arguments(options.get("extra_arguments"))
@@ -34,9 +37,6 @@ class MutationBase(graphene.Mutation):
             arguments_info[argument.display_name] = argument
 
         setattr(self, "arguments_info", arguments_info)
-
-    def get_model(self):
-        return self.graphene_type._meta.model
 
     def set_custom_auth(self, options):
         custom_auth = options.get("custom_auth")
