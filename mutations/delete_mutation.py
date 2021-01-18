@@ -36,7 +36,7 @@ class DeleteMutation(MutationBase):
     @enforce_custom_auth_decorator
     def mutate(cls, root, info, **kwargs):
         id = kwargs.get("id")
-        model = cls.graphene_type._meta.model
+        model = cls.get_model()
 
         try:
             # Quering and deleting
