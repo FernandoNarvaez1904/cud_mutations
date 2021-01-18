@@ -37,16 +37,19 @@ class DeleteMutation(MutationBase):
     @enforce_custom_auth_decorator
     def mutate(cls, root, info, **kwargs):
         ids = kwargs.get("id")
-        model = cls.get_model()
+        model = cls.get_model(cls)
 
+        queries = []
         for id in ids:
             try:
                 # Quering and deleting
-                query = model.objects.get(id=id)
-                query.delete()
+                queries.append( model.objects.get(id=id))
             except Exception:
                 # If quering failed returning error
                 errors = [f"{model.__name__} with id '{id}' doesn't exist."]
                 return DeleteMutation(messages=errors, completed=False, )
+
+            for query in queries:
+                query.delete()
         # Returning successfully
         return DeleteMutation(completed=True)
