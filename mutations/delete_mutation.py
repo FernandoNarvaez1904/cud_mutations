@@ -29,23 +29,24 @@ class DeleteMutation(MutationBase):
             _meta=_meta,
             **options
         )
+
     class Arguments:
         id = graphene.List(graphene.ID, required=True)
-    
+
     @classmethod
     @enforce_custom_auth_decorator
     def mutate(cls, root, info, **kwargs):
         ids = kwargs.get("id")
         model = cls.get_model()
 
-        try:
-            # Quering and deleting
-            for id in ids:
+        for id in ids:
+            try:
+                # Quering and deleting
                 query = model.objects.get(id=id)
                 query.delete()
-        except Exception:
-            # If quering failed returning error
-            errors = [f"{model.__name__} with id '{id}' doesn't exist."]
-            return DeleteMutation(messages=errors, completed=False, )
+            except Exception:
+                # If quering failed returning error
+                errors = [f"{model.__name__} with id '{id}' doesn't exist."]
+                return DeleteMutation(messages=errors, completed=False, )
         # Returning successfully
         return DeleteMutation(completed=True)

@@ -1,7 +1,7 @@
 from django.test import TestCase
 import graphene
 from mutations.mutation_base import MutationBase
-from test_mutations.models import IsolatedModel
+from ..models import IsolatedModel
 from test_mutations.graphene_django_type import RelationshipReceiverModelType, IsolatedModelType
 
 
