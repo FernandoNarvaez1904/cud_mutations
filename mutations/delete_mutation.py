@@ -16,7 +16,7 @@ class DeleteMutation(MutationBase):
     ):
         cls.set_graphene_type(cls, options)
 
-        cls.set_extra_arguments(options)
+        cls.set_extra_arguments(cls, options)
 
         cls.set_custom_auth(cls, options)
 
