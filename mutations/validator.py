@@ -86,7 +86,7 @@ class Validator():
             return True
         return False
     
-    def validate_before_mutate(before_mutate) -> bool:
+    def validate_mutation_functions(before_mutate) -> bool:
         if before_mutate:
             if callable(before_mutate):
                 return True
