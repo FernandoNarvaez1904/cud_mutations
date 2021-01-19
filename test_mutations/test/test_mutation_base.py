@@ -76,7 +76,6 @@ class MutationBaseSetFunctionsTestCase(TestCase):
         self.assertEqual(auth(), ret)
     
     def test_set_before_mutate(self):
-
         self.mutation_base.set_before_mutate({})
         should_be_none = self.mutation_base.before_mutate()
         self.assertIsNone(should_be_none)
@@ -85,4 +84,25 @@ class MutationBaseSetFunctionsTestCase(TestCase):
             return 25
         self.mutation_base.set_before_mutate({"before_mutate": is_int_25})
         should_be_25 = self.mutation_base.before_mutate()
+        self.assertEqual(should_be_25, 25)
+
+    def test_set_after_mutate(self):
+        self.mutation_base.set_after_mutate({})
+        should_be_none = self.mutation_base.after_mutate()
+        self.assertIsNone(should_be_none)
+
+        def is_int_25():
+            return 25
+        self.mutation_base.set_after_mutate({"after_mutate": is_int_25})
+        should_be_25 = self.mutation_base.after_mutate()
+        self.assertEqual(should_be_25, 25)
+    
+    def test_set_mutate_method(self):
+        self.assertRaises(Exception, self.mutation_base.set_mutate_method)
+        self.assertRaises(Exception, self.mutation_base.set_mutate_method, "Not a function")
+
+        def is_int_25():
+            return 25
+        self.mutation_base.set_mutate_method(is_int_25)
+        should_be_25 = self.mutation_base.mutate_method()
         self.assertEqual(should_be_25, 25)

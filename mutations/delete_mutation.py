@@ -1,7 +1,5 @@
 import graphene
 from .mutation_base import MutationBase
-from .utils.security import enforce_custom_auth_decorator
-
 
 class DeleteMutation(MutationBase):
 
@@ -22,6 +20,12 @@ class DeleteMutation(MutationBase):
 
         cls.set_extra_info(cls, options)
 
+        cls.set_before_mutate(cls, options)
+
+        cls.set_after_mutate(cls, options)
+
+        cls.set_mutate_method(cls, cls.mutate_method)
+
         return super().__init_subclass_with_meta__(
             interfaces=interfaces,
             possible_types=possible_types,
@@ -30,12 +34,7 @@ class DeleteMutation(MutationBase):
             **options
         )
 
-    class Arguments:
-        id = graphene.List(graphene.ID, required=True)
-
-    @classmethod
-    @enforce_custom_auth_decorator
-    def mutate(cls, root, info, **kwargs):
+    def mutate_method(cls, root, info, *args, **kwargs):
         ids = kwargs.get("id")
         model = cls.get_model(cls)
 
@@ -43,7 +42,7 @@ class DeleteMutation(MutationBase):
         for id in ids:
             try:
                 # Quering and deleting
-                queries.append( model.objects.get(id=id))
+                queries.append(model.objects.get(id=id))
             except Exception:
                 # If quering failed returning error
                 errors = [f"{model.__name__} with id '{id}' doesn't exist."]
@@ -53,3 +52,8 @@ class DeleteMutation(MutationBase):
             query.delete()
         # Returning successfully
         return DeleteMutation(completed=True)
+
+    class Arguments:
+        id = graphene.List(graphene.ID, required=True)
+
+

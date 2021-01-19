@@ -12,8 +12,10 @@ class MutationBase(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, **kwargs):
         cls.before_mutate(cls, root, info, **kwargs)
-        cls.mutation_function(cls, root, info, **kwargs)
-        pass
+        rt = cls.mutate_method(cls, root, info, **kwargs)
+        cls.after_mutate(cls, root, info, **kwargs)
+
+        return rt
 
     def get_model(self):
         return self.graphene_type._meta.model
@@ -82,7 +84,21 @@ class MutationBase(graphene.Mutation):
     def set_before_mutate(self, options):
         before_mutate = options.get("before_mutate")
         if not Validator.validate_mutation_functions(before_mutate):
-            def default_before_mutate(*args, **kwargs):
+            def default_mutate(*args, **kwargs):
                 pass
-            before_mutate = default_before_mutate
+            before_mutate = default_mutate
         self.before_mutate = before_mutate
+    
+    def set_mutate_method(self, mutate_method):
+        if not Validator.validate_mutation_functions(mutate_method):
+            raise Exception("Mutation instance needs a mutation_method property")
+        self.mutate_method = mutate_method
+    
+    def set_after_mutate(self, options):
+        after_mutate = options.get("after_mutate")
+        if not Validator.validate_mutation_functions(after_mutate):
+            def default_mutate(*args, **kwargs):
+                pass
+            after_mutate = default_mutate
+        self.after_mutate = after_mutate    
+    
