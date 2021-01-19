@@ -15,13 +15,13 @@ class User(AbstractUser):
 class IsolatedModel(models.Model):
     integer_field = models.IntegerField()
     char_field = models.CharField(max_length=255)
-    float_field = models.FloatField()
-    text_field = models.TextField()
+    float_field = models.FloatField(null=True)
+    text_field = models.TextField(null=True)
     decimal_field = models.DecimalField(decimal_places=2, max_digits=8)
-    booleanField = models.BooleanField()
-    date_field = models.DateField()
-    date_time_field = models.DateTimeField()
-    file_field = models.FileField()
+    booleanField = models.BooleanField(null=True)
+    date_field = models.DateField(null=True)
+    date_time_field = models.DateTimeField(null=True)
+    file_field = models.FileField(null=True)
 
 
 class RelationshipReceiverModel(models.Model):
