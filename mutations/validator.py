@@ -85,3 +85,10 @@ class Validator():
                 raise Exception("Meta.model needs to be a valid django model")
             return True
         return False
+    
+    def validate_before_mutate(before_mutate) -> bool:
+        if before_mutate:
+            if callable(before_mutate):
+                return True
+            raise Exception("before_mutate needs to be a function")
+        return False

@@ -78,3 +78,11 @@ class ValidatorFunctions(TestCase):
         self.assertFalse(func(None))
         self.assertTrue(func(IsolatedModelType))
         self.assertRaises(Exception, func, 25)
+    
+    def test_validate_before_mutate(self):
+        func = self.validator.validate_before_mutate
+        self.assertRaises(Exception, func, "hey")
+        self.assertFalse(func(None))
+        def normal_func():
+            pass
+        self.assertTrue(func(normal_func))
