@@ -24,7 +24,7 @@ class MutationBase(graphene.Mutation):
     
     def set_graphene_arguments(self, options):
 
-        self.set_graphene_type(options)
+        self.set_graphene_type(self, options)
         graphene_type_argument = format_graphene_arguments(
             self.graphene_type)
 
@@ -58,7 +58,7 @@ class MutationBase(graphene.Mutation):
         if not hasattr(self, "arguments_info"):
             setattr(self, "arguments_info", arguments_info)
         else:
-            current_arguments_info = options.get("arguments_info")
+            current_arguments_info = self.arguments_info
             self.arguments_info = {**current_arguments_info, **arguments_info}
 
     def set_custom_auth(self, options):
