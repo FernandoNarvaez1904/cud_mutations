@@ -74,3 +74,15 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         ret = self.mutation_base.custom_auth()
         self.assertEqual(auth(), ret)
+    
+    def test_set_before_mutate(self):
+
+        self.mutation_base.set_before_mutate({})
+        should_be_none = self.mutation_base.before_mutate()
+        self.assertIsNone(should_be_none)
+
+        def is_int_25():
+            return 25
+        self.mutation_base.set_before_mutate({"before_mutate": is_int_25})
+        should_be_25 = self.mutation_base.before_mutate()
+        self.assertEqual(should_be_25, 25)

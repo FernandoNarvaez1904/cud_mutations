@@ -15,7 +15,7 @@ class MutationBase(graphene.Mutation):
 
     def get_model(self):
         return self.graphene_type._meta.model
-
+    
     def set_graphene_arguments(self, options):
 
         self.set_graphene_type(options)
@@ -76,3 +76,11 @@ class MutationBase(graphene.Mutation):
         graphene_type = options.get("graphene_type")
         if Validator.validate_graphene_type(graphene_type):
             self.graphene_type = graphene_type
+    
+    def set_before_mutate(self, options):
+        before_mutate = options.get("before_mutate")
+        if not Validator.validate_before_mutate(before_mutate):
+            def default_before_mutate():
+                pass
+            before_mutate = default_before_mutate
+        self.before_mutate = before_mutate
