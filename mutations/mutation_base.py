@@ -1,6 +1,7 @@
 import graphene
 from .validator import Validator
 from .utils.formatting import format_extra_arguments, format_graphene_arguments
+from .utils.security import enforce_custom_auth_decorator
 
 
 class MutationBase(graphene.Mutation):
@@ -10,6 +11,7 @@ class MutationBase(graphene.Mutation):
     messages = graphene.List(graphene.String)
 
     @classmethod
+    @enforce_custom_auth_decorator
     def mutate(cls, root, info, **kwargs):
         cls.before_mutate(cls, root, info, **kwargs)
         rt = cls.mutate_method(cls, root, info, **kwargs)
