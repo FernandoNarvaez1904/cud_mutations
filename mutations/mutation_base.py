@@ -80,7 +80,7 @@ class MutationBase(graphene.Mutation):
     def set_before_mutate(self, options):
         before_mutate = options.get("before_mutate")
         if not Validator.validate_before_mutate(before_mutate):
-            def default_before_mutate():
+            def default_before_mutate(*args, **kwargs):
                 pass
             before_mutate = default_before_mutate
         self.before_mutate = before_mutate
