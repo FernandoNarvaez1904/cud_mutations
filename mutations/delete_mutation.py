@@ -49,7 +49,7 @@ class DeleteMutation(MutationBase):
                 errors = [f"{model.__name__} with id '{id}' doesn't exist."]
                 return DeleteMutation(messages=errors, completed=False, )
 
-            for query in queries:
-                query.delete()
+        for query in queries:
+            query.delete()
         # Returning successfully
         return DeleteMutation(completed=True)
