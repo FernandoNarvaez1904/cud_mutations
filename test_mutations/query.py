@@ -7,8 +7,8 @@ class IsolatedModelQuery(graphene.ObjectType):
 
     all_isolated_models = graphene.List(IsolatedModelType)
 
-    def resolve_all_isolated_models():
-        return IsolatedModel.objects.query.all()
+    def resolve_all_isolated_models(self, info):
+        return IsolatedModel.objects.all()
 
 
 class Query(
