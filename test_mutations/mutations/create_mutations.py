@@ -10,6 +10,7 @@ from ..graphene_django_type import (
 class CreateIsolatedType(CreateMutation):
     class Meta:
         graphene_type = IsolatedModelType
+        is_required = ["number", "textField"]
 
 
 class CreateRelationshipReceiverType(CreateMutation):
