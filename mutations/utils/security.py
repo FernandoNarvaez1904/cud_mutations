@@ -12,7 +12,6 @@ def enforce_custom_auth_decorator(function):
         # If auth failed, returning mutation with errors
         if not auth[0]:
             return cls(completed=False, errors=auth[1])
-        print("done")
         # If auth succeeded continuing with the execution
         rt = function(*args, **kwargs)
         return rt
