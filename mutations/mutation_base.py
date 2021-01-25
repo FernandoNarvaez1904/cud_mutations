@@ -21,12 +21,16 @@ class MutationBase(graphene.Mutation):
 
     def get_model(self):
         return self.graphene_type._meta.model
-    
+
     def set_graphene_arguments(self, options):
+
+        is_required = []
+        if required := options.get("is_required"):
+            is_required = required
 
         self.set_graphene_type(self, options)
         graphene_type_argument = format_graphene_arguments(
-            self.graphene_type)
+            self.graphene_type, is_required)
 
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
@@ -43,9 +47,14 @@ class MutationBase(graphene.Mutation):
             self.arguments_info = {**current_arguments_info, **arguments_info}
 
     def set_extra_arguments(self, options):
+
+        is_required = []
+        if required := options.get("is_required"):
+            is_required = required
+
         # Getting and Setting Extra Arguments
         extra_arguments = format_extra_arguments(
-            options.get("extra_arguments"))
+            options.get("extra_arguments"), is_required)
 
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
@@ -82,7 +91,7 @@ class MutationBase(graphene.Mutation):
         graphene_type = options.get("graphene_type")
         if Validator.validate_graphene_type(graphene_type):
             self.graphene_type = graphene_type
-    
+
     def set_before_mutate(self, options):
         before_mutate = options.get("before_mutate")
         if not Validator.validate_mutation_functions(before_mutate):
@@ -90,17 +99,17 @@ class MutationBase(graphene.Mutation):
                 pass
             before_mutate = default_mutate
         self.before_mutate = before_mutate
-    
+
     def set_mutate_method(self, mutate_method):
         if not Validator.validate_mutation_functions(mutate_method):
-            raise Exception("Mutation instance needs a mutation_method property")
+            raise Exception(
+                "Mutation instance needs a mutation_method property")
         self.mutate_method = mutate_method
-    
+
     def set_after_mutate(self, options):
         after_mutate = options.get("after_mutate")
         if not Validator.validate_mutation_functions(after_mutate):
             def default_mutate(*args, **kwargs):
                 pass
             after_mutate = default_mutate
-        self.after_mutate = after_mutate    
-    
+        self.after_mutate = after_mutate
