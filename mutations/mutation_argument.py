@@ -1,4 +1,4 @@
-from graphene import Scalar
+from graphene import Scalar, List
 
 
 class MutationArgument():
@@ -36,5 +36,6 @@ class MutationArgument():
 
     def set_of_type(self, graphene_scalar: Scalar) -> None:
         if not isinstance(graphene_scalar, Scalar):
-            raise Exception("of_type, has to be an instance of Scalar")
+             if not isinstance(graphene_scalar, List):
+                raise Exception("of_type, has to be an instance of Scalar")
         self.of_type: Scalar = graphene_scalar
