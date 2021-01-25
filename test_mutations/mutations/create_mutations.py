@@ -1,3 +1,4 @@
+import graphene
 from mutations.create_mutation import CreateMutation
 from graphene import ObjectType
 from ..graphene_django_type import (
@@ -10,7 +11,13 @@ from ..graphene_django_type import (
 class CreateIsolatedType(CreateMutation):
     class Meta:
         graphene_type = IsolatedModelType
-        is_required = ["number", "textField"]
+        is_required = ["number", "text_field", "string_r", "list_r"]
+        extra_arguments = [
+            ("string_r", graphene.String()),
+            ("string_n", graphene.String()),
+            ("list_r", graphene.List(graphene.String)),
+            ("list_n", graphene.List(graphene.String))
+        ]
 
 
 class CreateRelationshipReceiverType(CreateMutation):

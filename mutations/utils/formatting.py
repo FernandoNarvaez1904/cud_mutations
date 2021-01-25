@@ -1,14 +1,14 @@
 import graphene
 from typing import Any, Generator
+
+from graphene.types.scalars import Scalar
 from ..validator import Validator
 from ..mutation_argument import MutationArgument
 
 def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Generator:
     if Validator.validate_extra_arguments(extra_arguments):
         for argument in extra_arguments:
-
             argument_names = argument[0]
-            scalar = argument[1]
 
             display_name = ""
             property_name = ""
@@ -25,8 +25,16 @@ def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Ge
             if len(argument) > 2:
                 is_property = argument[2]
 
+            scalar = argument[1]
+
             # If name is required
             arg_is_required = display_name in is_required
+            if arg_is_required:
+                if isinstance(argument[1],Scalar):
+                    scalar = graphene.NonNull(argument[1].__class__)
+                else:
+                    scalar = graphene.NonNull(argument[1])
+
 
             yield MutationArgument(
                 display_name=display_name,

@@ -1,6 +1,6 @@
 from types import FunctionType
 from graphene import Scalar
-import graphene
+from graphene.types.structures import Structure
 from graphene_django import DjangoObjectType
 from graphene_django.utils.utils import is_valid_django_model
 
@@ -28,7 +28,7 @@ class Validator():
                     raise Exception("extra_argument name needs to be a str")
 
                 if not isinstance(argument[1], Scalar):
-                    if not isinstance(argument[1], graphene.List):
+                    if not isinstance(argument[1], Structure ):
                         raise Exception(
                          "extra_arguments second value in tuple needs to be an instance of scalar")
                 # If argument has is_property
