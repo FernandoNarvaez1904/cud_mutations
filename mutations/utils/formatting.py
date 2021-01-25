@@ -11,15 +11,12 @@ def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Ge
             argument_names = argument[0]
 
             display_name = ""
-            property_name = ""
             # If argument_name has property_name
             if isinstance(argument_names, tuple):
                 display_name = argument_names[0]
-                property_name = argument_names[1]
             # Else property_name will be the same as display_name
             else:
                 display_name = argument_names
-                property_name = argument_names
 
             is_property = True
             if len(argument) > 2:
@@ -38,7 +35,6 @@ def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Ge
 
             yield MutationArgument(
                 display_name=display_name,
-                property_name=property_name,
                 is_property=is_property,
                 is_required=arg_is_required,
                 graphene_scalar=scalar
@@ -75,7 +71,6 @@ def format_graphene_arguments(graphene_type: Any, is_required: list =[]) -> Gene
 
         yield MutationArgument(
             display_name=name,
-            property_name=name,
             graphene_scalar=scalar,
             is_required=arg_is_required,
             is_property=is_property,

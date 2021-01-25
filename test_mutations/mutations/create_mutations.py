@@ -13,10 +13,8 @@ class CreateIsolatedType(CreateMutation):
         graphene_type = IsolatedModelType
         is_required = ["number", "text_field", "string_r", "list_r"]
         extra_arguments = [
-            ("string_r", graphene.String()),
-            ("string_n", graphene.String()),
-            ("list_r", graphene.List(graphene.String)),
-            ("list_n", graphene.List(graphene.String))
+            ("hey", graphene.String()),
+
         ]
 
 
