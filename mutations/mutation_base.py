@@ -35,16 +35,9 @@ class MutationBase(graphene.Mutation):
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
 
-        arguments_info = {}
         for argument in graphene_type_argument:
             setattr(self.Arguments, argument.display_name, argument.of_type)
-            arguments_info[argument.display_name] = argument
 
-        if not hasattr(self, "arguments_info"):
-            setattr(self, "arguments_info", arguments_info)
-        else:
-            current_arguments_info = options.get("arguments_info")
-            self.arguments_info = {**current_arguments_info, **arguments_info}
 
     def set_extra_arguments(self, options):
 
@@ -59,16 +52,8 @@ class MutationBase(graphene.Mutation):
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
 
-        arguments_info = {}
         for argument in extra_arguments:
             setattr(self.Arguments, argument.display_name, argument.of_type)
-            arguments_info[argument.display_name] = argument
-
-        if not hasattr(self, "arguments_info"):
-            setattr(self, "arguments_info", arguments_info)
-        else:
-            current_arguments_info = self.arguments_info
-            self.arguments_info = {**current_arguments_info, **arguments_info}
 
     def set_custom_auth(self, options):
         custom_auth = options.get("custom_auth")
