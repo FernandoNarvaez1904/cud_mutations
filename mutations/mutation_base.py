@@ -13,6 +13,14 @@ class MutationBase(graphene.Mutation):
     @classmethod
     @enforce_custom_auth_decorator
     def mutate(cls, root, info, **kwargs):
+
+        # Extract extra arguments and converting to one element
+        extra_arguments = {}
+        for i in cls.extra_argument_names:
+            if i in kwargs:
+                extra_arguments[i] = kwargs.pop(i)
+        kwargs["extra_arguments"] = extra_arguments
+
         cls.before_mutate(cls, root, info, **kwargs)
         rt = cls.mutate_method(cls, root, info, **kwargs)
         cls.after_mutate(cls, root, info, **kwargs)
@@ -52,8 +60,10 @@ class MutationBase(graphene.Mutation):
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
 
+        setattr(self, "extra_argument_names", [])
         for argument in extra_arguments:
             setattr(self.Arguments, argument.display_name, argument.of_type)
+            self.extra_argument_names.append(argument.display_name)
 
     def set_custom_auth(self, options):
         custom_auth = options.get("custom_auth")
