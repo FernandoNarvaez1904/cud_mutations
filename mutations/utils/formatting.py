@@ -1,9 +1,10 @@
 import graphene
 from typing import Any, Generator
-
 from graphene.types.scalars import Scalar
+import graphene.types.structures as graphene_structure
 from ..validator import Validator
 from ..mutation_argument import MutationArgument
+
 
 def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Generator:
     if Validator.validate_extra_arguments(extra_arguments):
@@ -27,11 +28,10 @@ def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Ge
             # If name is required
             arg_is_required = display_name in is_required
             if arg_is_required:
-                if isinstance(argument[1],Scalar):
+                if isinstance(argument[1], Scalar):
                     scalar = graphene.NonNull(argument[1].__class__)
                 else:
                     scalar = graphene.NonNull(argument[1])
-
 
             yield MutationArgument(
                 display_name=display_name,
@@ -40,12 +40,12 @@ def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Ge
                 graphene_scalar=scalar
             )
 
-def format_graphene_arguments(graphene_type: Any, is_required: list =[]) -> Generator:
-    # Accessing specific place in graph type that has all options needed
-    graphene_type_options = graphene_type._meta.class_type._meta.__dict__
-    # Getting all the fields in the type
-    fields = graphene_type_options.get("fields")
 
+def format_graphene_arguments(graphene_type: Any, is_required: list = []) -> Generator:
+    # Accessing specific place in graph type that has all options needed
+    # Getting all the fields in the type
+    fields = graphene_type._meta.fields
+    scalar = None
     for name, field in fields.items():
         # Field comes from the type directly, so it's assumed that is a property
         is_property = True
@@ -67,7 +67,18 @@ def format_graphene_arguments(graphene_type: Any, is_required: list =[]) -> Gene
         # If the field is a relationship
         elif callable(field.type):
             is_relationship = True
-            scalar = graphene.String(required=True)
+            field_type = field.type().type
+
+            if isinstance(field_type, graphene_structure.NonNull):
+                if isinstance(field_type.of_type, graphene_structure.List):
+                    scalar = graphene.List(graphene.ID, required=True)
+                else:
+                    scalar = graphene.ID(required=True)
+            else:
+                if isinstance(field_type, graphene_structure.List):
+                    scalar = graphene.List(graphene.ID)
+                else:
+                    scalar = graphene.ID()
 
         yield MutationArgument(
             display_name=name,
