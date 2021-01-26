@@ -11,7 +11,7 @@ from ..graphene_django_type import (
 class CreateIsolatedType(CreateMutation):
     class Meta:
         graphene_type = IsolatedModelType
-        is_required = ["number", "text_field", "string_r", "list_r"]
+        is_required = ["decimal_field", "char_field", "integer_field"]
         extra_arguments = [
             ("hey", graphene.String()),
 
