@@ -1,4 +1,3 @@
-import re
 import graphene
 from .validator import Validator
 from .utils.formatting import format_extra_arguments, format_graphene_arguments
