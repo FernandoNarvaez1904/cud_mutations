@@ -1,5 +1,6 @@
 from .mutation_base import MutationBase
 
+
 class CreateMutation(MutationBase):
 
     @classmethod
@@ -35,6 +36,70 @@ class CreateMutation(MutationBase):
             **options
         )
 
-    def mutate_method(cls, root, info, *args, **kwargs):
-        return CreateMutation(messages= ["Added"], completed=True) 
+    def pop_formatted_relationship_queries(cls, fields) -> dict:
 
+        relationship_queries = {
+            "foreign_key": {},
+            "many_to_many": {}
+        }
+        for name, value in cls.relationship_models.items():
+            if name in fields:
+                id = fields.get(name)
+                if isinstance(id, list):
+                    for i in id:
+                        # Querying it to check if it exist
+                        id_query = value.objects.get(pk=i)
+                    relationship_queries["many_to_many"][name] = id
+                else:
+                    id_query = value.objects.get(pk=id)
+                    relationship_queries["foreign_key"][name] = id_query
+            fields.pop(name)
+        return relationship_queries
+
+    def pop_manual_resolve_arguments(cls, model, fields: dict) -> dict:
+
+        model_fields = model.__dict__
+        manual_resolve_arg = {}
+
+        for name, value in fields.items():
+            if name not in model_fields:
+                manual_resolve_arg.append(name)
+
+        for name in manual_resolve_arg:
+            value = fields.pop(name)
+            manual_resolve_arg[name] = value
+
+    def mutate_method(cls, root, info, *args, **kwargs):
+
+        model = cls.get_model(cls)
+        query_fields = {}
+        try:
+            # Deleting all arguments that are not field of the model
+            query_fields = {**kwargs}
+
+            # Cleaning query_fields
+            query_fields.pop("extra_arguments")
+            cls.pop_manual_resolve_arguments(
+                cls, model, query_fields)
+
+            # Getting relationships from fields
+            relationship_queries = cls.pop_formatted_relationship_queries(
+                cls, query_fields)
+            query_fields = {**query_fields, **
+                            relationship_queries["foreign_key"]}
+
+            # Creating Model
+            new_model = model(**query_fields)
+
+            # Saving Query
+            new_model.save()
+
+            # Adding many_to_many
+            for name, value in relationship_queries["many_to_many"].items():
+                for id in value:
+                    getattr(new_model, name).add(id)
+
+        except Exception as e:
+            return CreateMutation(messages=[str(e)], completed=False)
+
+        return CreateMutation(messages=["Added"], completed=True)
