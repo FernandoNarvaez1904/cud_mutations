@@ -1,3 +1,4 @@
+from typing import Any
 from graphene import Scalar
 from graphene.types.structures import Structure
 
@@ -10,6 +11,7 @@ class MutationArgument():
         is_required: bool = False,
         is_property: bool = True,
         is_relationship: bool = False,
+        model: Any = None,
     ) -> None:
 
         self.set_display_name(display_name)
@@ -18,6 +20,7 @@ class MutationArgument():
         self.is_required = is_required
         self.is_property = is_property
         self.is_relationship = is_relationship
+        self.model = model
 
     def set_display_name(self, display_name: str) -> None:
         if display_name is None:
@@ -31,3 +34,4 @@ class MutationArgument():
              if not isinstance(graphene_scalar, Structure):
                 raise Exception("of_type, has to be an instance of Scalar")
         self.of_type: Scalar = graphene_scalar
+

@@ -46,6 +46,8 @@ def format_graphene_arguments(graphene_type: Any, is_required: list = []) -> Gen
     # Getting all the fields in the type
     fields = graphene_type._meta.fields
     scalar = None
+    model = None
+
     for name, field in fields.items():
         # Field comes from the type directly, so it's assumed that is a property
         is_property = True
@@ -72,13 +74,18 @@ def format_graphene_arguments(graphene_type: Any, is_required: list = []) -> Gen
             if isinstance(field_type, graphene_structure.NonNull):
                 if isinstance(field_type.of_type, graphene_structure.List):
                     scalar = graphene.List(graphene.ID, required=True)
+                    model = field_type.of_type.of_type.of_type._meta.model
                 else:
                     scalar = graphene.ID(required=True)
+                    model = field_type.of_type._meta.model
             else:
                 if isinstance(field_type, graphene_structure.List):
                     scalar = graphene.List(graphene.ID)
+                    model = field_type.of_type.of_type._meta.model
+
                 else:
                     scalar = graphene.ID()
+                    model = field_type._meta.model
 
         yield MutationArgument(
             display_name=name,
@@ -86,4 +93,5 @@ def format_graphene_arguments(graphene_type: Any, is_required: list = []) -> Gen
             is_required=arg_is_required,
             is_property=is_property,
             is_relationship=is_relationship,
+            model=model,
         )

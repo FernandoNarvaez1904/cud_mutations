@@ -1,3 +1,4 @@
+import re
 import graphene
 from .validator import Validator
 from .utils.formatting import format_extra_arguments, format_graphene_arguments
@@ -43,9 +44,13 @@ class MutationBase(graphene.Mutation):
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
 
+        relationship_models = {}
         for argument in graphene_type_argument:
-            setattr(self.Arguments, argument.display_name, argument.of_type)
+            if argument.is_relationship:
+                relationship_models[argument.display_name] = argument.model
 
+            setattr(self.Arguments, argument.display_name, argument.of_type)
+        setattr(self, "relationship_models", relationship_models)
 
     def set_extra_arguments(self, options):
 
