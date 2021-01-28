@@ -12,7 +12,7 @@ class DeleteMutation(MutationBase):
         _meta=None,
         **options
     ):
-        cls.set_graphene_type(cls, options)
+        cls.set_graphene_type(cls, options, False)
 
         cls.set_extra_arguments(cls, options)
 
