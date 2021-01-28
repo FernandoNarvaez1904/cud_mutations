@@ -86,10 +86,12 @@ class MutationBase(graphene.Mutation):
         if Validator.validate_extra_info(extra_info):
             self.extra_info = extra_info
 
-    def set_graphene_type(self, options):
+    def set_graphene_type(self, options, return_obj=True):
         graphene_type = options.get("graphene_type")
         if Validator.validate_graphene_type(graphene_type):
             self.graphene_type = graphene_type
+            if return_obj:
+                setattr(self, graphene_type.__name__, graphene.Field(graphene_type))
 
     def set_before_mutate(self, options):
         before_mutate = options.get("before_mutate")
