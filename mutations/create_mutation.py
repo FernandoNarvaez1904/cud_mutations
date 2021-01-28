@@ -102,4 +102,6 @@ class CreateMutation(MutationBase):
         except Exception as e:
             return CreateMutation(messages=[str(e)], completed=False)
 
-        return CreateMutation(messages=["Added"], completed=True)
+        response = CreateMutation(messages=["Added"], completed=True)
+        setattr(response, cls.graphene_type.__name__, new_model)
+        return response
