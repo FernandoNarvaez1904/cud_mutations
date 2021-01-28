@@ -114,3 +114,36 @@ class MutationBase(graphene.Mutation):
                 pass
             after_mutate = default_mutate
         self.after_mutate = after_mutate
+        
+    def pop_formatted_relationship_queries(cls, fields) -> dict:
+
+        relationship_queries = {
+            "foreign_key": {},
+            "many_to_many": {}
+        }
+        for name, value in cls.relationship_models.items():
+            if name in fields:
+                id = fields.get(name)
+                if isinstance(id, list):
+                    for i in id:
+                        # Querying it to check if it exist
+                        id_query = value.objects.get(pk=i)
+                    relationship_queries["many_to_many"][name] = id
+                else:
+                    id_query = value.objects.get(pk=id)
+                    relationship_queries["foreign_key"][name] = id_query
+            fields.pop(name)
+        return relationship_queries
+
+    def pop_manual_resolve_arguments(cls, model, fields: dict) -> dict:
+
+        model_fields = model.__dict__
+        manual_resolve_arg = {}
+
+        for name, value in fields.items():
+            if name not in model_fields:
+                manual_resolve_arg.append(name)
+
+        for name in manual_resolve_arg:
+            value = fields.pop(name)
+            manual_resolve_arg[name] = value
