@@ -21,9 +21,9 @@ class MutationBase(graphene.Mutation):
                 extra_arguments[i] = kwargs.pop(i)
         kwargs["extra_arguments"] = extra_arguments
 
-        cls.before_mutate(cls, root, info, **kwargs)
+        cls.before_mutate(cls, root, info,  kwargs)
         rt = cls.mutate_method(cls, root, info, **kwargs)
-        cls.after_mutate(cls, root, info, **kwargs)
+        cls.after_mutate(cls, root, info, kwargs)
 
         return rt
 
