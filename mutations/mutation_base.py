@@ -30,7 +30,7 @@ class MutationBase(graphene.Mutation):
     def get_model(self):
         return self.graphene_type._meta.model
 
-    def set_graphene_arguments(self, options):
+    def set_graphene_arguments(self, options, update_rel=False):
 
         is_required = []
         if required := options.get("is_required"):
@@ -47,8 +47,13 @@ class MutationBase(graphene.Mutation):
         for argument in graphene_type_argument:
             if argument.is_relationship:
                 relationship_models[argument.display_name] = argument.model
-
-            setattr(self.Arguments, argument.display_name, argument.of_type)
+                if update_rel and isinstance(argument.of_type, graphene.List):
+                    setattr(self.Arguments, f"add_{argument.display_name}", argument.of_type)
+                    setattr(self.Arguments, f"rmv_{argument.display_name}", argument.of_type)
+                else:
+                    setattr(self.Arguments, argument.display_name, argument.of_type)
+            else:
+                setattr(self.Arguments, argument.display_name, argument.of_type)
         setattr(self, "relationship_models", relationship_models)
 
     def set_extra_arguments(self, options):

@@ -14,7 +14,7 @@ class CreateMutation(MutationBase):
     ):
         cls.set_graphene_type(cls, options)
 
-        cls.set_graphene_arguments(cls, options)
+        cls.set_graphene_arguments(cls, options, True)
 
         cls.set_extra_arguments(cls, options)
 
@@ -62,7 +62,7 @@ class CreateMutation(MutationBase):
             new_model.save()
 
             # Adding many_to_many
-            for name, value in relationship_queries["many_to_many"].items():
+            for name, value in relationship_queries["many_to_many"]["add"].items():
                 for id in value:
                     getattr(new_model, name).add(id)
 
