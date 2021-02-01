@@ -124,30 +124,35 @@ class MutationBase(graphene.Mutation):
 
         relationship_queries = {
             "foreign_key": {},
-            "many_to_many": {}
+            "many_to_many": {
+                "add" : {},
+                "rmv" : {}
+             }
         }
-        for name, value in cls.relationship_models.items():
-            if name in fields:
-                id = fields.get(name)
+        
+        for name, id in list(fields.items()):
+            query_name = name
+            if name in cls.relationship_models or (query_name := name[4:]) in cls.relationship_models:
+
+                model = cls.relationship_models.get(query_name)
                 if isinstance(id, list):
                     for i in id:
                         # Querying it to check if it exist
-                        id_query = value.objects.get(pk=i)
-                    relationship_queries["many_to_many"][name] = id
+                        id_query = model.objects.get(pk=i)
+                    if name.startswith("rmv"):
+                        relationship_queries["many_to_many"]["rmv"][query_name] = id
+                    else:
+                        relationship_queries["many_to_many"]["add"][query_name] = id
                 else:
-                    id_query = value.objects.get(pk=id)
-                    relationship_queries["foreign_key"][name] = id_query
+                    id_query = model.objects.get(query_name)
+                    relationship_queries["foreign_key"][query_name] = id_query
             fields.pop(name)
+                
         return relationship_queries
 
     def pop_manual_resolve_arguments(cls, model, fields: dict) -> dict:
 
-        model_fields = model.__dict__
         manual_resolve_arg = {}
-
-        for name, value in fields.items():
-            if name not in model_fields:
-                manual_resolve_arg.append(name)
 
         for name in manual_resolve_arg:
             value = fields.pop(name)
