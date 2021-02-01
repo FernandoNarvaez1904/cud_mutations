@@ -32,7 +32,8 @@ class RelationshipSenderModel(models.Model):
     name = models.CharField(max_length=255)
     foreign_key = models.ForeignKey(
         RelationshipReceiverModel,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="sender_foreign_key"
     )
     many_to_many = models.ManyToManyField(
         RelationshipReceiverModel,
