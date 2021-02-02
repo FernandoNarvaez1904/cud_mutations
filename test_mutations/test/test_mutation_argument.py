@@ -8,7 +8,6 @@ class MutationArgumentSetFunctionsTestCase(TestCase):
     def setUp(self):
         self.arg = MutationArgument(
             display_name="name",
-            property_name="prop_name",
             graphene_scalar=graphene.Int()
         )
 
@@ -18,15 +17,10 @@ class MutationArgumentSetFunctionsTestCase(TestCase):
         self.assertRaises(Exception, self.arg.set_display_name, " ")
         self.assertRaises(Exception, self.arg.set_display_name, None)
 
-        self.assertRaises(Exception, self.arg.set_property_name, " ")
-        self.assertRaises(Exception, self.arg.set_property_name, None)
-
         # Test for correctness
         self.arg.set_display_name("display one")
         self.assertEqual("display one", self.arg.display_name)
 
-        self.arg.set_property_name("property one")
-        self.assertEqual("property one", self.arg.property_name)
 
     def test_graphene_scalar_is_correct_type(self):
 

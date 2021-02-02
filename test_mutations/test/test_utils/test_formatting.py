@@ -21,7 +21,6 @@ class MutationBaseFormatFunctionsTestCase(TestCase):
         ])
         for i in gen:
             self.assertEqual(correct_name, i.display_name)
-            self.assertEqual(correct_name, i.property_name)
             self.assertTrue(isinstance(i.of_type, graphene.String))
             self.assertTrue(i.is_property)
             self.assertFalse(i.is_relationship)
@@ -42,7 +41,6 @@ class MutationBaseFormatFunctionsTestCase(TestCase):
         ])
         for i in gen:
             self.assertEqual(i.display_name, names[0])
-            self.assertEqual(i.property_name, names[1])
 
         # test for is_required
         gen = func([(names, graphene.String())], [names[0]])
