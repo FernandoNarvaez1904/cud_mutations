@@ -1,4 +1,3 @@
-from six import indexbytes
 from .mutation_base import MutationBase
 import graphene
 
