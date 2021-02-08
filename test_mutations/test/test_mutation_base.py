@@ -1,8 +1,8 @@
 from django.test import TestCase
 import graphene
 from mutations.mutation_base import MutationBase
-from ..models import IsolatedModel
-from test_mutations.graphene_django_type import IsolatedModelType
+from ..models import IsolatedModel, RelationshipReceiverModel
+from test_mutations.graphene_django_type import IsolatedModelType, RelationshipSenderModelType
 
 
 class MutationBaseSetFunctionsTestCase(TestCase):
@@ -109,3 +109,26 @@ class MutationBaseSetFunctionsTestCase(TestCase):
         self.mutation_base.set_mutate_method(self.mutation_base, is_int_25)
         should_be_25 = self.mutation_base.mutate_method()
         self.assertEqual(should_be_25, 25)
+
+    def test_pop_formatted_relationship(self):
+        # Data to format
+        fields = {'add_many_to_many': ['1'], 'add_sender_foreign_key': [], 'add_sender_many_to_many': [
+        ], 'foreign_key': '1', 'rmv_many_to_many': [], 'rmv_sender_foreign_key': [], 'rmv_sender_many_to_many': []}
+
+        # Adding foreign key
+        f_key = RelationshipReceiverModel(name="hey")
+        f_key.save()
+
+        # Setting the model to use
+        options = {
+            "graphene_type": RelationshipSenderModelType
+        }
+        self.mutation_base.set_graphene_arguments(self.mutation_base, options)
+
+        expected_result = {'foreign_key': {'foreign_key': f_key}, 'many_to_many': {
+            'add': {'many_to_many': ['1']}, 'rmv': {'many_to_many': []}}}
+            
+        given_result = self.mutation_base.pop_formatted_relationship_queries(
+            self.mutation_base, fields)
+
+        self.assertTrue(expected_result == given_result)
