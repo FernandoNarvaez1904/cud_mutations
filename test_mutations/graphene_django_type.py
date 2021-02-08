@@ -9,7 +9,7 @@ class IsolatedModelType(DjangoObjectType):
     class Meta:
         model = IsolatedModel
 
-    def resolve_number(self):
+    def resolve_number(self, info):
         return 25
 
 
