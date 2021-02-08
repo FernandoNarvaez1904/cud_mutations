@@ -17,6 +17,9 @@ class UpdateMutation(MutationBase):
 
         cls.set_graphene_arguments(cls, options, True)
 
+        # Setting necessary id field
+        setattr(cls.Arguments, "id", graphene.ID(required=True) )
+
         cls.set_extra_arguments(cls, options)
 
         cls.set_custom_auth(cls, options)
