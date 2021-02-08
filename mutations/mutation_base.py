@@ -2,6 +2,7 @@ import graphene
 from .validator import Validator
 from .utils.formatting import format_extra_arguments, format_graphene_arguments
 from .utils.security import enforce_custom_auth_decorator
+from django.forms.models import model_to_dict
 
 
 class MutationBase(graphene.Mutation):
@@ -151,7 +152,9 @@ class MutationBase(graphene.Mutation):
     def pop_manual_resolve_arguments(cls, model, fields: dict) -> dict:
 
         manual_resolve_arg = {}
+        model_as_dict = model_to_dict(model)
 
-        for name in manual_resolve_arg:
-            value = fields.pop(name)
-            manual_resolve_arg[name] = value
+        for name, j in list(fields.items()):
+            if name not in model_as_dict:
+                value = fields.pop(name)
+                manual_resolve_arg[name] = value
