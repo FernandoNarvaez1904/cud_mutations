@@ -60,8 +60,8 @@ class UpdateMutation(MutationBase):
             
             query_model = model.objects.get(pk=id)
 
-            for field in query_fields:
-                setattr(query_fields,field.__name__, field)
+            for name, field in query_fields.items():
+                setattr(query_model, name, field)
             
             for name, value in relationship_queries["many_to_many"]["add"].items():
                 for id in value:
@@ -84,6 +84,3 @@ class UpdateMutation(MutationBase):
         response = UpdateMutation(messages=["Added"], completed=True)
         setattr(response, cls.graphene_type.__name__, query_model)
         return response
-
-    class Arguments:
-        id = graphene.ID(required=True)

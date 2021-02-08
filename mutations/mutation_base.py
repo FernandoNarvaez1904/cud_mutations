@@ -39,7 +39,6 @@ class MutationBase(graphene.Mutation):
         self.set_graphene_type(self, options)
         graphene_type_argument = format_graphene_arguments(
             self.graphene_type, is_required)
-
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
 
@@ -121,7 +120,6 @@ class MutationBase(graphene.Mutation):
         self.after_mutate = after_mutate
         
     def pop_formatted_relationship_queries(cls, fields) -> dict:
-
         relationship_queries = {
             "foreign_key": {},
             "many_to_many": {
@@ -144,7 +142,7 @@ class MutationBase(graphene.Mutation):
                     else:
                         relationship_queries["many_to_many"]["add"][query_name] = id
                 else:
-                    id_query = model.objects.get(query_name)
+                    id_query = model.objects.get(pk=id)
                     relationship_queries["foreign_key"][query_name] = id_query
             fields.pop(name)
                 
