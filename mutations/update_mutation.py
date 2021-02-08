@@ -84,6 +84,6 @@ class UpdateMutation(MutationBase):
         except Exception as e:
             return UpdateMutation(messages=[str(e)], completed=False)
 
-        response = UpdateMutation(messages=["Added"], completed=True)
+        response = UpdateMutation(completed=True)
         setattr(response, cls.graphene_type.__name__, query_model)
         return response
