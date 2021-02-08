@@ -127,8 +127,12 @@ class MutationBaseSetFunctionsTestCase(TestCase):
 
         expected_result = {'foreign_key': {'foreign_key': f_key}, 'many_to_many': {
             'add': {'many_to_many': ['1']}, 'rmv': {'many_to_many': []}}}
-            
+
         given_result = self.mutation_base.pop_formatted_relationship_queries(
             self.mutation_base, fields)
 
         self.assertTrue(expected_result == given_result)
+
+    def test_pop_manual_resolve_arguments(self):
+        #TODO implement test
+        pass
