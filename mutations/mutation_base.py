@@ -144,7 +144,7 @@ class MutationBase(graphene.Mutation):
                 else:
                     id_query = model.objects.get(pk=id)
                     relationship_queries["foreign_key"][query_name] = id_query
-            fields.pop(name)
+                fields.pop(name)
                 
         return relationship_queries
 
