@@ -134,5 +134,9 @@ class MutationBaseSetFunctionsTestCase(TestCase):
         self.assertTrue(expected_result == given_result)
 
     def test_pop_manual_resolve_arguments(self):
-        #TODO implement test
-        pass
+        test_data = {'float_field': 58.6, 'number': 5}
+        
+        self.mutation_base.pop_manual_resolve_arguments(self.mutation_base, IsolatedModel, test_data)
+
+        self.assertTrue('float_field' in test_data)
+        self.assertFalse('number' in test_data)
