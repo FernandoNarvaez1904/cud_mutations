@@ -7,7 +7,7 @@ from django.forms.models import model_to_dict
 
 class MutationBase(graphene.Mutation):
 
-    # Default field to return from the mutation
+    # Default field to return from the mutations
     completed = graphene.Boolean()
     messages = graphene.List(graphene.String)
 
@@ -36,24 +36,32 @@ class MutationBase(graphene.Mutation):
         is_required = []
         if required := options.get("is_required"):
             is_required = required
+        exclude_list = []
+        if exclude := options.get("exclude"):
+            exclude_list = exclude
 
         self.set_graphene_type(self, options)
         graphene_type_argument = format_graphene_arguments(
-            self.graphene_type, is_required)
+            self.graphene_type, is_required, exclude_list)
         if not hasattr(self, "Arguments"):
             setattr(self, "Arguments", type("Arguments", (), {}))
 
         relationship_models = {}
         for argument in graphene_type_argument:
-            if argument.is_relationship:
-                relationship_models[argument.display_name] = argument.model
-                if update_rel and isinstance(argument.of_type, graphene.List):
-                    setattr(self.Arguments, f"add_{argument.display_name}", argument.of_type)
-                    setattr(self.Arguments, f"rmv_{argument.display_name}", argument.of_type)
+            if argument.of_type:
+                if argument.is_relationship:
+                    relationship_models[argument.display_name] = argument.model
+                    if update_rel and isinstance(argument.of_type, graphene.List):
+                        setattr(
+                            self.Arguments, f"add_{argument.display_name}", argument.of_type)
+                        setattr(
+                            self.Arguments, f"rmv_{argument.display_name}", argument.of_type)
+                    else:
+                        setattr(self.Arguments, argument.display_name,
+                                argument.of_type)
                 else:
-                    setattr(self.Arguments, argument.display_name, argument.of_type)
-            else:
-                setattr(self.Arguments, argument.display_name, argument.of_type)
+                    setattr(self.Arguments, argument.display_name,
+                            argument.of_type)
         setattr(self, "relationship_models", relationship_models)
 
     def set_extra_arguments(self, options):
@@ -96,7 +104,8 @@ class MutationBase(graphene.Mutation):
         if Validator.validate_graphene_type(graphene_type):
             self.graphene_type = graphene_type
             if return_obj:
-                setattr(self, graphene_type.__name__, graphene.Field(graphene_type))
+                setattr(self, graphene_type.__name__,
+                        graphene.Field(graphene_type))
 
     def set_before_mutate(self, options):
         before_mutate = options.get("before_mutate")
@@ -119,16 +128,16 @@ class MutationBase(graphene.Mutation):
                 pass
             after_mutate = default_mutate
         self.after_mutate = after_mutate
-        
+
     def pop_formatted_relationship_queries(cls, fields) -> dict:
         relationship_queries = {
             "foreign_key": {},
             "many_to_many": {
-                "add" : {},
-                "rmv" : {}
-             }
+                "add": {},
+                "rmv": {}
+            }
         }
-        
+
         for name, id in list(fields.items()):
             query_name = name
             if name in cls.relationship_models or (query_name := name[4:]) in cls.relationship_models:
@@ -146,7 +155,7 @@ class MutationBase(graphene.Mutation):
                     id_query = model.objects.get(pk=id)
                     relationship_queries["foreign_key"][query_name] = id_query
                 fields.pop(name)
-                
+
         return relationship_queries
 
     def pop_manual_resolve_arguments(cls, model, fields: dict) -> dict:
@@ -156,5 +165,6 @@ class MutationBase(graphene.Mutation):
 
         for name, j in list(fields.items()):
             if name not in model_as_dict:
-                value = fields.pop(name)
-                manual_resolve_arg[name] = value
+                if name[4:] not in model_as_dict:
+                    value = fields.pop(name)
+                    manual_resolve_arg[name] = value

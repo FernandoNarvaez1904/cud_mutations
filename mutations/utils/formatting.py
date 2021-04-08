@@ -41,7 +41,7 @@ def format_extra_arguments(extra_arguments: list,  is_required: list = []) -> Ge
             )
 
 
-def format_graphene_arguments(graphene_type: Any, is_required: list = []) -> Generator:
+def format_graphene_arguments(graphene_type: Any, is_required: list = [], exclude=[]) -> Generator:
     # Accessing specific place in graph type that has all options needed
     # Getting all the fields in the type
     fields = graphene_type._meta.fields
@@ -49,49 +49,54 @@ def format_graphene_arguments(graphene_type: Any, is_required: list = []) -> Gen
     model = None
 
     for name, field in fields.items():
-        # Field comes from the type directly, so it's assumed that is a property
-        is_property = True
-        arg_is_required = name in is_required
+        if name not in exclude:
+            # Field comes from the type directly, so it's assumed that is a property
+            is_property = True
+            arg_is_required = name in is_required
 
-        is_relationship = False
-        scalar = None
-        if field_type := field.__dict__.get("_type"):
-            # If it is not a graphene scalar, but a graphene structure like,
-            # nonNull, the actual scalar will be inside of the "of_type"
-            # key in the structure object.__dict__
-            # If field it's not an structure, then
-            # the field is the scalar
-            gp_of_type = field_type.__dict__.get("_of_type")
+            is_relationship = False
+            scalar = None
+            if field_type := field.__dict__.get("_type"):
+                # If it is not a graphene scalar, but a graphene structure like,
+                # nonNull, the actual scalar will be inside of the "of_type"
+                # key in the structure object.__dict__
+                # If field it's not an structure, then
+                # the field is the scalar
 
-            scalar = gp_of_type(required=arg_is_required) if gp_of_type else field_type(
-                required=arg_is_required)
+                gp_of_type = field_type.__dict__.get("_of_type")
 
-        # If the field is a relationship
-        elif callable(field.type):
-            is_relationship = True
-            field_type = field.type().type
+                scalar = gp_of_type(required=arg_is_required) if gp_of_type else field_type(
+                    required=arg_is_required)
 
-            if isinstance(field_type, graphene_structure.NonNull):
-                if isinstance(field_type.of_type, graphene_structure.List):
-                    scalar = graphene.List(graphene.ID, )
-                    model = field_type.of_type.of_type.of_type._meta.model
-                else:
-                    scalar = graphene.ID()
-                    model = field_type.of_type._meta.model
-            else:
-                if isinstance(field_type, graphene_structure.List):
-                    scalar = graphene.List(graphene.ID)
-                    model = field_type.of_type.of_type._meta.model
+            # If the field is a relationship
+            elif callable(field.type):
+                is_relationship = True
+                try:
+                    field_type = field.type().type
 
-                else:
-                    scalar = graphene.ID()
-                    model = field_type._meta.model
+                    if isinstance(field_type, graphene_structure.NonNull):
+                        if isinstance(field_type.of_type, graphene_structure.List):
+                            scalar = graphene.List(graphene.ID)
+                            model = field_type.of_type.of_type.of_type._meta.model
+                        else:
+                            scalar = graphene.ID()
+                            model = field_type.of_type._meta.model
+                    else:
+                        if isinstance(field_type, graphene_structure.List):
+                            scalar = graphene.List(graphene.ID)
+                            model = field_type.of_type.of_type._meta.model
 
-        yield MutationArgument(
-            display_name=name,
-            graphene_scalar=scalar,
-            is_required=arg_is_required,
-            is_property=is_property,
-            is_relationship=is_relationship,
-            model=model,
-        )
+                        else:
+                            scalar = graphene.ID()
+                            model = field_type._meta.model
+                except:
+                    pass
+
+            yield MutationArgument(
+                display_name=name,
+                graphene_scalar=scalar,
+                is_required=arg_is_required,
+                is_property=is_property,
+                is_relationship=is_relationship,
+                model=model,
+            )

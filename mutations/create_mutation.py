@@ -47,14 +47,13 @@ class CreateMutation(MutationBase):
             # Cleaning query_fields
             query_fields.pop("extra_arguments")
             cls.pop_manual_resolve_arguments(
-                cls, model, query_fields)
+                cls, model(), query_fields)
 
             # Getting relationships from fields
             relationship_queries = cls.pop_formatted_relationship_queries(
                 cls, query_fields)
             query_fields = {**query_fields, **
                             relationship_queries["foreign_key"]}
-
             # Creating Model
             new_model = model(**query_fields)
 
